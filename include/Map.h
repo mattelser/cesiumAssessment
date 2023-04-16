@@ -11,6 +11,8 @@ public:
     // attrs
     int xDim = 512;
     int yDim = 512;
+    int mPerCell = 30;   // 30m per cell from the spec
+    int mPerHeight = 11; // 11m per unit of height, from the spec
 
     // methods
     Map(std::string fpath);
