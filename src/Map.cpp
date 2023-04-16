@@ -5,7 +5,7 @@
 #include <iostream>
 #include <math.h>
 #include <queue>
-#include <map>
+#include <unordered_map>
 
 Map::Map(std::string fpath, int xDim, int yDim)
 {
@@ -72,6 +72,13 @@ int Map::getCost(Point p1, Point p2)
     return vCost + mPerCell;
 }
 
+// -------------------------------------------
+//          Begin pathfinding functions
+// -------------------------------------------
+
+// ------------- Helper functions ------------
+// ----------------- and types ---------------
+
 typedef std::pair<int, Point> PriPair;
 
 struct distWithDefault
@@ -98,13 +105,22 @@ void getNeighbors(Point p, std::vector<Point> *vec)
     vec->push_back(Point(p.x - 1, p.y));
 }
 
+
+struct pointHash{
+    size_t operator()(const Point& p) const {
+        return 7; // std::hash<int>{}(p.x) ^ std::hash<int>{}(p.y);
+    }
+};
+
+// --------- Actual shortest path alg ------------
+
 Path Map::getShortestPath(Point start, Point end)
 {
     // create a priority queue of pairs of (cost, point) with a custom
     // comparison function that only uses cost as the priority
     std::priority_queue<PriPair, std::vector<PriPair>, compFirstOfPair> pq;
-    std::map<Point, Point> prev;
-    std::map<Point, distWithDefault> dist;
+    std::unordered_map<Point, Point, pointHash> prev;
+    std::unordered_map<Point, distWithDefault, pointHash> dist;
 
     // initialize the distance and priority queue for the start
     pq.push(std::make_pair(0, start));
