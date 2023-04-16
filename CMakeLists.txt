@@ -8,7 +8,7 @@ enable_testing()
 
 include_directories("include")
 
-add_executable(pathFinder src/main.cpp src/Map.cpp src/Parser.cpp src/Point.cpp)
+add_executable(pathFinder src/main.cpp src/Map.cpp src/Point.cpp)
 
 # use Catch2 unit test suite
 find_package(Catch2 3 REQUIRED)

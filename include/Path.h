@@ -9,4 +9,6 @@
 
 typedef std::list<Point> Path;
 
+void printPath(Path p);
+
 #endif // PATH_H
