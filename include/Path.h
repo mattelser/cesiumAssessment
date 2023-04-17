@@ -1,14 +1,21 @@
-//
-//
-
 #ifndef PATH_H
 #define PATH_H
 
 #include "Point.h"
 #include <list>
 
-typedef std::list<Point> Path;
+class Path {
+public:
+    Path();
 
-void printPath(Path p);
+    int distance;
+    void prepend(Point p) {pList.push_front(p);};
+    void append(Point p) {pList.push_back(p);};
+    void printPath();
+
+private:
+    std::list<Point> pList;
+
+};
 
 #endif // PATH_H

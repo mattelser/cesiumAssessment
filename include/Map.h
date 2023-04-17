@@ -28,7 +28,8 @@ private:
     // methods
     void parseMapFile(std::string fpath);
     unsigned int getHeight(Point p);
-    int getCost(Point p1, Point p2);
+    int getDist(Point p1, Point p2);
+    int heuristic(Point p1, Point end);
     bool pointIsValid(Point p);
 };
 

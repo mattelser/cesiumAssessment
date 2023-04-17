@@ -1,10 +1,13 @@
 #include "Path.h"
 #include <stdio.h>
 
-void printPath(Path p)
-{
-    for (auto i : p)
-    {
+Path::Path(){
+    distance = INT_MAX;
+    pList = std::list<Point>();
+}
+
+void Path::printPath() {
+    for (auto i : pList) {
         printf("(%d, %d) ", i.x, i.y);
     }
     printf("\n");

@@ -45,7 +45,18 @@ bool Map::pointIsValid(Point p){
    return p.x < xDim && p.y < yDim && p.x >= 0 && p.y >= 0;
 }
 
-int Map::getCost(Point p1, Point p2)
+int Map::heuristic(Point p1, Point end){
+    // additionally consider the distance of the point in space from the end
+    // note that we convert to meters to keep calculations scaled properly and
+    // we use all three dimensions, since we have a height map
+    int xDist = (end.x - p1.x) * mPerCell;
+    int yDist = (end.y - p1.y) * mPerCell;
+    int zDist = (getHeight(end) - getHeight(p1)) * mPerHeight;
+
+    return sqrt(pow(xDist, 2) + pow(yDist, 2) + pow(zDist, 2));
+}
+
+int Map::getDist(Point p1, Point p2)
 {
 
     int xDist = abs(p1.x - p2.x);
@@ -105,7 +116,7 @@ void getNeighbors(Point p, std::vector<Point> *vec)
 
 struct pointHash{
     size_t operator()(const Point& p) const {
-        return 7; // std::hash<int>{}(p.x) ^ std::hash<int>{}(p.y);
+        return std::hash<int>{}(p.x) ^ std::hash<int>{}(p.y);
     }
 };
 
@@ -134,6 +145,10 @@ int Map::getShortestPath(Point start, Point end, Path * pth)
         int currCost = curr.first;
         Point currP = curr.second;
 
+        if (currCost != dist[currP].val){
+            continue;
+        }
+
         getNeighbors(currP, &neighbors);
         for (Point nbr : neighbors)
         {
@@ -141,7 +156,7 @@ int Map::getShortestPath(Point start, Point end, Path * pth)
                 continue;
             }
 
-            int newCost = currCost + getCost(currP, nbr);
+            int newCost = currCost + getDist(currP, nbr) + heuristic(nbr, end);
             int oldCost = dist[nbr].val;
             if (newCost < oldCost)
             {
@@ -160,15 +175,23 @@ int Map::getShortestPath(Point start, Point end, Path * pth)
 
     // handle no path found
     if (prev.find(end) == prev.end()){
+        // return an error and leave the path defaults
         return -1;
     }
 
+    // assemble the path working backwards, since we only know the previous cells
+    pth->distance = 0;
     Point currP = end;
-    pth->push_front(currP);
+    pth->append(currP);
     while (prev.find(currP) != prev.end()){
+        // tally the distance as we build the path
+        pth->distance += getDist(currP, prev[currP]);
+
+        // append the previous cell to our path
         currP = prev[currP];
-        pth->push_front(currP);
+        pth->prepend(currP);
     }
+
 
     return 0;
 }

@@ -1,15 +1,6 @@
-#include "Map.h"
-#include "Path.h"
+#include "CmdLineTool.h"
 
-int main()
+int main(int argc, char *argv[])
 {
-    Map mp("ion_dev_heightmaps/heightmap1.data");
-
-    Path pth;
-    mp.getShortestPath(Point(0, 0), Point(10, 10), &pth);
-
-    printPath(pth);
-
-    // delete pth;
-    return 0;
+    return CmdLineTool(argc, argv).run();
 }
