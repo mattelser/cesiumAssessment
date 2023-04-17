@@ -21,6 +21,8 @@ int CmdLineTool::run(){
 
     printf("Length of shortest path: %dm\n", pth->distance);
 
+    // pth->printPath();
+
     // cleanup
     delete pth;
 

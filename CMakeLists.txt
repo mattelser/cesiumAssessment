@@ -12,7 +12,7 @@ add_executable(pathFinder src/main.cpp src/Map.cpp src/Point.cpp src/Path.cpp sr
 
 # use Catch2 unit test suite
 find_package(Catch2 3 REQUIRED)
-add_executable(tests test/test.cpp)
+add_executable(tests test/test.cpp src/Map.cpp src/Path.cpp src/Point.cpp)
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})

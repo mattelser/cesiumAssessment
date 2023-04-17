@@ -53,7 +53,7 @@ int Map::heuristic(Point p1, Point end){
     int yDist = (end.y - p1.y) * mPerCell;
     int zDist = (getHeight(end) - getHeight(p1)) * mPerHeight;
 
-    return sqrt(pow(xDist, 2) + pow(yDist, 2) + pow(zDist, 2));
+    return sqrt(powf(xDist, 2) + powf(yDist, 2) + powf(zDist, 2));
 }
 
 int Map::getDist(Point p1, Point p2)
@@ -76,7 +76,7 @@ int Map::getDist(Point p1, Point p2)
     // we know we have moved one cell horizontally, so add the horizontal scale once
     // we take the abs since dropping down is not a negative cost, and we cast
     // to int because otherwise abs is ambiguous to the compiler
-    int vCost = abs((int)(getHeight(p2) - getHeight(p1)) * mPerHeight);
+    int vCost = abs((int)getHeight(p2) - (int)getHeight(p1)) * mPerHeight;
     return vCost + mPerCell;
 }
 
@@ -91,7 +91,7 @@ typedef std::pair<int, Point> PriPair;
 
 struct distWithDefault
 {
-    // TODO explain this
+    // an abstraction layer that allows us to create a map with a default value.
     int val = INT_MAX;
 };
 
@@ -124,10 +124,18 @@ struct pointHash{
 
 int Map::getShortestPath(Point start, Point end, Path * pth)
 {
+    // This uses the classic A* algorithm, which is a slight modification
+    // of Dijkstra's algorithm using a heuristic of distance to bias the search
+    // in the direction of the end point.
+
     // create a priority queue of pairs of (cost, point) with a custom
     // comparison function that only uses cost as the priority
     std::priority_queue<PriPair, std::vector<PriPair>, compFirstOfPair> pq;
     std::unordered_map<Point, Point, pointHash> prev;
+
+    // create a map of points to their distance. By using the `distWithDefault`
+    // struct, we establish a default value for any missed lookups and therefore
+    // save time over filling a table with "max_int"
     std::unordered_map<Point, distWithDefault, pointHash> dist;
 
     // initialize the distance and priority queue for the start
@@ -145,6 +153,10 @@ int Map::getShortestPath(Point start, Point end, Path * pth)
         int currCost = curr.first;
         Point currP = curr.second;
 
+        // since we're not removing old points from the priority queue
+        // we can sometimes pop duplicates off the priority queue.
+        // We can avoid extra calculations on these duplicates by ruling ignoring
+        // them if we have a more recent cost estimate in our cost map `dist`
         if (currCost != dist[currP].val){
             continue;
         }
@@ -185,13 +197,12 @@ int Map::getShortestPath(Point start, Point end, Path * pth)
     pth->append(currP);
     while (prev.find(currP) != prev.end()){
         // tally the distance as we build the path
-        pth->distance += getDist(currP, prev[currP]);
+        pth->distance += getDist(prev[currP], currP);
 
         // append the previous cell to our path
         currP = prev[currP];
         pth->prepend(currP);
     }
-
 
     return 0;
 }
