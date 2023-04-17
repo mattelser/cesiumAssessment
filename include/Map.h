@@ -19,7 +19,7 @@ public:
 
     // methods
     Map(std::string fpath, int xDim = DEFAULT_XDIM, int yDim = DEFAULT_YDIM);
-    Path getShortestPath(Point p1, Point p2);
+    int getShortestPath(Point p1, Point p2, Path *pth);
 
 private:
     // attrs

@@ -13,9 +13,6 @@ Map::Map(std::string fpath, int xDim, int yDim)
     this->yDim = yDim;
 
     parseMapFile(fpath);
-
-    Path pth = getShortestPath(Point(0, 0), Point(10, 10));
-    printPath(pth);
 }
 
 void Map::parseMapFile(std::string fpath)
@@ -114,7 +111,7 @@ struct pointHash{
 
 // --------- Actual shortest path alg ------------
 
-Path Map::getShortestPath(Point start, Point end)
+int Map::getShortestPath(Point start, Point end, Path * pth)
 {
     // create a priority queue of pairs of (cost, point) with a custom
     // comparison function that only uses cost as the priority
@@ -136,10 +133,6 @@ Path Map::getShortestPath(Point start, Point end)
 
         int currCost = curr.first;
         Point currP = curr.second;
-
-        // if (currCost != dist[currP].val){
-        //     continue;
-        // }
 
         getNeighbors(currP, &neighbors);
         for (Point nbr : neighbors)
@@ -165,16 +158,17 @@ Path Map::getShortestPath(Point start, Point end)
         }
     }
 
-    // TODO handle no path found
-
-    Path pth;
-
-    Point currP = end;
-    pth.push_front(currP);
-    while (prev.find(currP) != prev.end()){
-        currP = prev[currP];
-        pth.push_front(currP);
+    // handle no path found
+    if (prev.find(end) == prev.end()){
+        return -1;
     }
 
-    return pth;
+    Point currP = end;
+    pth->push_front(currP);
+    while (prev.find(currP) != prev.end()){
+        currP = prev[currP];
+        pth->push_front(currP);
+    }
+
+    return 0;
 }
