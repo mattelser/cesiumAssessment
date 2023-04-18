@@ -2,7 +2,7 @@
 #include "Map.h"
 #include "Path.h"
 
-#define NUM_ITERATIONS 50
+#define NUM_ITERATIONS 25
 
 void randPathReversed()
 {

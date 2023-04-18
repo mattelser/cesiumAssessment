@@ -116,7 +116,7 @@ void getNeighbors(Point p, std::vector<Point> *vec)
 
 struct pointHash{
     size_t operator()(const Point& p) const {
-        return std::hash<int>{}(p.x) ^ std::hash<int>{}(p.y);
+        return std::hash<int>{}(p.x) ^ std::hash<int>{}(p.y) << 3;
     }
 };
 
@@ -153,6 +153,12 @@ int Map::getShortestPath(Point start, Point end, Path * pth)
         int currCost = curr.first;
         Point currP = curr.second;
 
+        if (currP == end)
+        {
+            // if we've found any path to the end, skip calculating others
+            earlyExit = true;
+        }
+
         // since we're not removing old points from the priority queue
         // we can sometimes pop duplicates off the priority queue.
         // We can avoid extra calculations on these duplicates by ruling ignoring
@@ -177,11 +183,6 @@ int Map::getShortestPath(Point start, Point end, Path * pth)
                 pq.emplace(newCost, nbr);
             }
 
-            if (nbr == end)
-            {
-                // if we've found any path to the end, skip calculating others
-                earlyExit = true;
-            }
         }
     }
 
